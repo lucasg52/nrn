@@ -173,6 +173,15 @@ enum struct may_cause_reallocation { Yes, No };
 
 extern std::vector<void*>* defer_delete_storage;
 
+// void clear_defer_delete_storage() {
+//     std::cout << "Finally deleting storage. NEURON model no more valid" << std::endl;
+//     if (defer_delete_storage) {
+//         for (auto data : *defer_delete_storage) {
+//             free(data);
+//         }
+//     }
+// }
+
 /**
  * @brief Storage for safe deletion of soa<...> containers.
  *
@@ -669,6 +678,13 @@ struct soa {
             assert(vec.empty() == result);
         });
         return result;
+    }
+
+    void shrink() {
+        for_all_vectors<detail::may_cause_reallocation::Yes>(
+            [](auto const& tag, auto& vec, int field_index, int array_dim) {
+                vec.shrink_to_fit();
+            });
     }
 
   private:

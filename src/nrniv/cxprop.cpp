@@ -1,5 +1,6 @@
 #include "arraypool.h"   // ArrayPool
 #include "hocdec.h"      // Datum
+#include "../neuron/model_data.hpp" // soa data
 #include "section.h"     // Section
 #include "structpool.h"  // Pool
 
@@ -111,6 +112,7 @@ void nrn_poolshrink(int shrink) {
                 pdatum.reset();
             }
         }
+        neuron::detail::model_data.shrink_soa_data();
     } else {
         Printf("poolshrink --- type name (dbluse, size) (datumuse, size)\n");
         for (auto i = 0; i < datumpools().size(); ++i) {

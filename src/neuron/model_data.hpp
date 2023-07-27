@@ -99,6 +99,17 @@ struct Model {
     [[nodiscard]] std::unique_ptr<container::utils::storage_info> find_container_info(
         void const* cont) const;
 
+    void shrink_soa_data() {
+        if (!m_node_data.empty()) {
+            m_node_data.shrink();
+        }
+        if (!m_mech_data.empty()) {
+            for (auto& mech_data : m_mech_data) {
+                (*mech_data).shrink();
+            }
+        }
+    }
+
   private:
     void set_unsorted_callback(container::Mechanism::storage& mech_data);
 
