@@ -681,7 +681,10 @@ struct soa {
     }
 
     void shrink() {
-        std::cout << "Shrinking soa storage" << std::endl;
+        if (m_frozen_count) {
+            throw_error("shrink() called on a frozen structure");
+        }
+        mark_as_unsorted_impl<true>();
         for_all_vectors<detail::may_cause_reallocation::Yes>(
             [](auto const& tag, auto& vec, int field_index, int array_dim) {
                 vec.shrink_to_fit();
