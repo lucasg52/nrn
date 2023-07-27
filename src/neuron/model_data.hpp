@@ -103,11 +103,7 @@ struct Model {
         if (!m_node_data.empty()) {
             m_node_data.shrink();
         }
-        if (!m_mech_data.empty()) {
-            for (auto& mech_data : m_mech_data) {
-                (*mech_data).shrink();
-            }
-        }
+        apply_to_mechanisms([](auto& mech_data) { mech_data.shrink(); });
     }
 
   private:
