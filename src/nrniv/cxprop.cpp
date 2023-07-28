@@ -113,6 +113,7 @@ void nrn_poolshrink(int shrink) {
             }
         }
         neuron::detail::model_data.shrink_soa_data();
+        neuron::container::detail::clear_defer_delete_storage<int>();
     } else {
         Printf("poolshrink --- type name (dbluse, size) (datumuse, size)\n");
         for (auto i = 0; i < datumpools().size(); ++i) {

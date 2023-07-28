@@ -173,14 +173,14 @@ enum struct may_cause_reallocation { Yes, No };
 
 extern std::vector<void*>* defer_delete_storage;
 
-// void clear_defer_delete_storage() {
-//     std::cout << "Finally deleting storage. NEURON model no more valid" << std::endl;
-//     if (defer_delete_storage) {
-//         for (auto data : *defer_delete_storage) {
-//             free(data);
-//         }
-//     }
-// }
+template<typename T>  // Had to define this function as templated for the moment to avoid redefinition compilation erros
+void clear_defer_delete_storage() {
+    identifier_defer_delete_storage = nullptr;
+    std::for_each((*defer_delete_storage).begin(),
+                  (*defer_delete_storage).end(),
+                  [](void* ptr) { operator delete[](ptr); });
+    defer_delete_storage = nullptr;
+}
 
 /**
  * @brief Storage for safe deletion of soa<...> containers.

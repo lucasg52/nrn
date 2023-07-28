@@ -24,12 +24,8 @@ Model::Model() {
 Model::~Model() {
     assert(container::detail::identifier_defer_delete_storage ==
            &m_identifier_ptrs_for_deferred_deletion);
-    container::detail::identifier_defer_delete_storage = nullptr;
     assert(container::detail::defer_delete_storage == &m_ptrs_for_deferred_deletion);
-    container::detail::defer_delete_storage = nullptr;
-    std::for_each(m_ptrs_for_deferred_deletion.begin(),
-                  m_ptrs_for_deferred_deletion.end(),
-                  [](void* ptr) { operator delete[](ptr); });
+    neuron::container::detail::clear_defer_delete_storage<Model>();
 }
 std::unique_ptr<container::utils::storage_info> Model::find_container_info(void const* cont) const {
     if (auto maybe_info = m_node_data.find_container_info(cont); maybe_info) {
