@@ -39,6 +39,18 @@ void iv_display_scale(float);
 #include "nrnmpi.h"
 #include "nrnpy.h"
 
+#include "backward.hpp"
+backward::SignalHandling sh({
+#if HAVE_SIGPIPE
+  SIGPIPE,
+#endif
+#if HAVE_SIGSEGV
+  SIGSEGV,
+#endif
+  SIGFPE
+});
+
+
 #if defined(IVX11_DYNAM)
 #include <IV-X11/ivx11_dynam.h>
 #endif

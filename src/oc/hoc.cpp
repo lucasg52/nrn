@@ -215,19 +215,6 @@ static int backslash(int c);
     exit(i);
 }
 
-#if defined(WIN32)
-#define HAS_SIGPIPE 0
-#else
-#define HAS_SIGPIPE 1
-#endif
-#if HAS_SIGPIPE
-/*ARGSUSED*/
-static RETSIGTYPE sigpipe_handler(int sig) {
-    fprintf(stderr, "writing to a broken pipe\n");
-    signal(SIGPIPE, sigpipe_handler);
-}
-#endif
-
 int getnb(void) /* get next non-white character */
 {
     int c;
@@ -708,103 +695,6 @@ void hoc_coredump_on_error(void) {
     pushx(1.);
 }
 
-void print_bt() {
-#ifdef USE_BACKWARD
-    backward_wrapper();
-#else
-#if HAVE_EXECINFO_H
-    const size_t nframes = 12;
-    void* frames[nframes];
-    size_t size;
-    char** bt_strings = NULL;
-    // parsed elements from stacktrace line:
-    size_t funcname_size = 256;
-    // symbol stores the symbol at which the signal was invoked
-    char* symbol = static_cast<char*>(malloc(sizeof(char) * funcname_size));
-    // the function name where the signal was invoked
-    char* funcname = static_cast<char*>(malloc(sizeof(char) * funcname_size));
-    // offset stores the relative address from the function where the signal was invoked
-    char* offset = static_cast<char*>(malloc(sizeof(char) * 10));
-    // the memory address of the function
-    void* addr = NULL;
-    // get void*'s for maximum last 16 entries on the stack
-    size = backtrace(frames, nframes);
-
-    // print out all the frames to stderr
-    Fprintf(stderr, "Backtrace:\n");
-    // get the stacktrace as an array of strings
-    bt_strings = backtrace_symbols(frames, size);
-    if (bt_strings) {
-        size_t i;
-        // start printing at third frame to skip the signal handler and printer function
-        for (i = 2; i < size; ++i) {
-            // parse the stack frame line
-            int status = parse_bt_symbol(bt_strings[i], &addr, symbol, offset);
-            if (status) {
-                status = cxx_demangle(symbol, &funcname, &funcname_size);
-                if (status == 0) {  // demangling worked
-                    Fprintf(stderr, "\t%s : %s+%s\n", bt_strings[i], funcname, offset);
-                } else {  // demangling failed, fallback
-                    Fprintf(stderr, "\t%s : %s()+%s\n", bt_strings[i], symbol, offset);
-                }
-            } else {  // could not parse, simply print the stackframe as is
-                Fprintf(stderr, "\t%s\n", bt_strings[i]);
-            }
-        }
-        free(bt_strings);
-    }
-    free(funcname);
-    free(offset);
-    free(symbol);
-#else
-    Fprintf(stderr, "No backtrace info available.\n");
-#endif
-#endif
-}
-
-RETSIGTYPE fpecatch(int sig) /* catch floating point exceptions */
-{
-    /*ARGSUSED*/
-#if DOS
-    _fpreset();
-#endif
-#if NRN_FLOAT_EXCEPTION
-    matherr1();
-#endif
-    Fprintf(stderr, "Floating point exception\n");
-    print_bt();
-    if (coredump) {
-        abort();
-    }
-    signal(SIGFPE, fpecatch);
-    execerror("Floating point exception.", (char*) 0);
-}
-
-#if HAVE_SIGSEGV
-RETSIGTYPE sigsegvcatch(int sig) /* segmentation violation probably due to arg type error */
-{
-    Fprintf(stderr, "Segmentation violation\n");
-    print_bt();
-    /*ARGSUSED*/
-    if (coredump) {
-        abort();
-    }
-    execerror("Aborting.", (char*) 0);
-}
-#endif
-
-#if HAVE_SIGBUS
-RETSIGTYPE sigbuscatch(int sig) {
-    Fprintf(stderr, "Bus error\n");
-    print_bt();
-    /*ARGSUSED*/
-    if (coredump) {
-        abort();
-    }
-    execerror("Aborting. ", "See $NEURONHOME/lib/help/oc.help");
-}
-#endif
-
 int hoc_pid(void) {
     return (int) getpid();
 } /* useful for making unique temporary file names */
@@ -916,9 +806,6 @@ int hoc_main1(int argc, const char** argv, const char** envp) {
     hoc_audit_from_hoc_main1(argc, argv, envp);
     hoc_main1_init(argv[0], envp);
     try {
-#if HAS_SIGPIPE
-        signal(SIGPIPE, sigpipe_handler);
-#endif
         gargv = argv;
         gargc = argc;
         if (argc > 2 && strcmp(argv[1], "-bbs_nhost") == 0) {
@@ -1206,28 +1093,14 @@ int hoc_moreinput() {
 
 typedef RETSIGTYPE (*SignalType)(int);
 
-static SignalType signals[4];
+static SignalType signals[1];
 
 static void set_signals(void) {
     signals[0] = signal(SIGINT, onintr);
-    signals[1] = signal(SIGFPE, fpecatch);
-#if HAVE_SIGSEGV
-    signals[2] = signal(SIGSEGV, sigsegvcatch);
-#endif
-#if HAVE_SIGBUS
-    signals[3] = signal(SIGBUS, sigbuscatch);
-#endif
 }
 
 static void restore_signals(void) {
     signals[0] = signal(SIGINT, signals[0]);
-    signals[1] = signal(SIGFPE, signals[1]);
-#if HAVE_SIGSEGV
-    signals[2] = signal(SIGSEGV, signals[2]);
-#endif
-#if HAVE_SIGBUS
-    signals[3] = signal(SIGBUS, signals[3]);
-#endif
 }
 
 struct signal_handler_guard {

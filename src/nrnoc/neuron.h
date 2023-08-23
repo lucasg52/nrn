@@ -42,3 +42,5 @@ extern void nrnglobalmechmenu(), nrnmechmenu(), nrnpointmenu();
 extern void this_section(), this_node(), parent_section(), parent_node();
 extern void parent_connection(), section_orientation();
 extern void print_local_memory_usage();
+
+extern void raise_segfault();

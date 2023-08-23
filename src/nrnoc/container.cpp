@@ -157,3 +157,12 @@ std::unique_ptr<storage_info> find_container_info(void const* c) {
     return model().find_container_info(c);
 }
 }  // namespace neuron::container::utils
+
+
+#include <signal.h>
+void raise_segfault() {
+  raise(SIGSEGV);
+  hoc_pushx(1.0);
+}
+
+

@@ -58,7 +58,6 @@
 #define forcode            hoc_forcode
 #define shortfor           hoc_shortfor
 #define fout               hoc_fout
-#define fpecatch           hoc_fpecatch
 #define free_list          hoc_free_list
 #define frin               hoc_frin
 #define funcret            hoc_funcret
