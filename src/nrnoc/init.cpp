@@ -378,6 +378,7 @@ void hoc_last_init(void) {
     }
     SectionList_reg();
     SectionRef_reg();
+    // TODODIAM: We need to avoid defining a new mechanism that only holds a `diam` double variable
     register_mech(morph_mech, morph_alloc, nullptr, nullptr, nullptr, nullptr, -1, 0);
     neuron::mechanism::register_data_fields(MORPHOLOGY, neuron::mechanism::field<double>{"diam"});
     hoc_register_prop_size(MORPHOLOGY, 1, 0);

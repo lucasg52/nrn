@@ -98,6 +98,8 @@ typedef struct Info3Val { /* storage to help build matrix efficiently */
 the notify_free_val parameter in node_free in solve.cpp
 */
 #define NODEAREA(n) ((n)->area())
+// TODODIAM: _rinv is related to diameter and needs chnges as well. This probably needs to become
+// member of Node using the new data structures (_rinv == inverted diameter?)
 #define NODERINV(n) ((n)->_rinv)
 
 struct Extnode;

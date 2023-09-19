@@ -747,6 +747,7 @@ sections */
 static double diam_from_list(Section* sec, int inode, Prop* p, double rparent);
 
 int recalc_diam_count_, nrn_area_ri_nocount_, nrn_area_ri_count_;
+// TODODIAM: need to understand what this function does
 void nrn_area_ri(Section* sec) {
     int j;
     double ra, dx, rright, rleft;

@@ -1457,6 +1457,8 @@ static PyObject* seg_volume(NPySegObj* self) {
             // the scaled_frustum_volume formula factored out a pi/12
             a *= M_PI / 12;
         } else {
+            // TODODIAM: this needs to be changed to return the `diam` of the closest Node
+            // from the new data structure
             // 0 or 1 3D points... so give cylinder volume
             Node* nd = node_exact(sec, x);
             for (Prop* p = nd->prop; p; p = p->next) {

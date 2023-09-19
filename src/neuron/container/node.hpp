@@ -71,6 +71,14 @@ struct RHS {
     using type = double;
 };
 
+// TODODIAM
+struct DIAM {
+    using type = double;
+    constexpr type default_value() const {
+        return DEF_diam;
+    }
+};
+
 }  // namespace field
 
 /**
