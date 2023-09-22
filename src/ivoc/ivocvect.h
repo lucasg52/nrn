@@ -13,11 +13,17 @@ struct Object;
 
 class IvocVect {
   public:
+    IvocVect(const IvocVect&) = delete;
+    IvocVect(IvocVect&&) = delete;
+
     IvocVect(Object* obj = NULL);
     IvocVect(int, Object* obj = NULL);
     IvocVect(int, double, Object* obj = NULL);
     IvocVect(IvocVect&, Object* obj = NULL);
     ~IvocVect();
+
+    IvocVect& operator=(const IvocVect&) = delete;
+    IvocVect& operator=(IvocVect&&) = delete;
 
     Object** temp_objvar();
     int buffer_size();
