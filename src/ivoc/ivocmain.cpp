@@ -234,7 +234,7 @@ extern std::string nrnmpi_load();
 #endif
 
 // some things are defined in libraries earlier than they are used so...
-#include <nrnisaac.h>
+#include "Isaac64.hpp"
 static void force_load() {
     if (always_false) {
         nrnisaac_new();

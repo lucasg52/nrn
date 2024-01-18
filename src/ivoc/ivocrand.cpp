@@ -9,7 +9,6 @@
 #include <InterViews/resource.h>
 #include "classreg.h"
 #include "oc2iv.h"
-#include "nrnisaac.h"
 #include "utils/enumerate.h"
 
 #include <vector>
@@ -34,6 +33,7 @@
 #include <HypGeom.h>
 #include <Weibull.h>
 #include <MCellRan4.hpp>
+#include <Isaac64.hpp>
 
 #if HAVE_IV
 #include "ivoc.h"
@@ -81,51 +81,6 @@ NrnRandom123::NrnRandom123(uint32_t id1, uint32_t id2, uint32_t id3) {
 NrnRandom123::~NrnRandom123() {
     nrnran123_deletestream(s_);
 }
-
-class Isaac64: public RNG {
-  public:
-    Isaac64(uint32_t seed = 0);
-    virtual ~Isaac64();
-    virtual uint32_t asLong() {
-        return (uint32_t) nrnisaac_uint32_pick(rng_);
-    }
-    virtual void reset() {
-        nrnisaac_init(rng_, seed_);
-    }
-    virtual double asDouble() {
-        return nrnisaac_dbl_pick(rng_);
-    }
-    uint32_t seed() {
-        return seed_;
-    }
-    void seed(uint32_t s) {
-        seed_ = s;
-        reset();
-    }
-
-  private:
-    uint32_t seed_;
-    void* rng_;
-    static uint32_t cnt_;
-};
-
-Isaac64::Isaac64(uint32_t seed) {
-    if (cnt_ == 0) {
-        cnt_ = 0xffffffff;
-    }
-    --cnt_;
-    seed_ = seed;
-    if (seed_ == 0) {
-        seed_ = cnt_;
-    }
-    rng_ = nrnisaac_new();
-    reset();
-}
-Isaac64::~Isaac64() {
-    nrnisaac_delete(rng_);
-}
-
-uint32_t Isaac64::cnt_ = 0;
 
 RandomPlay::RandomPlay(Rand* r, neuron::container::data_handle<double> px)
     : r_{r}

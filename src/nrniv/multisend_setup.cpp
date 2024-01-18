@@ -94,7 +94,7 @@ void TarList::alloc() {
     }
 }
 
-#include <nrnisaac.h>
+#include "Isaac64.hpp"
 static void* ranstate;
 
 static void random_init(int i) {

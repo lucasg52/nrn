@@ -6,6 +6,7 @@ add_library(
   Erlang.cpp
   Geom.cpp
   HypGeom.cpp
+  Isaac64.cpp
   LogNorm.cpp
   MCellRan4.cpp
   MLCG.cpp
