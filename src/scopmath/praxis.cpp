@@ -1,5 +1,4 @@
 #include <../../nrnconf.h>
-#include "mcran4.h"
 #include "oc_ansi.h"
 #include "scoplib.h"
 
@@ -7,6 +6,8 @@
 #include <cstdio>
 #include <cstdint>
 #include <cstdlib>
+
+#include "MCellRan4.hpp"
 
 #undef small
 

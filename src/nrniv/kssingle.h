@@ -5,8 +5,7 @@
 #include <mymath.h>
 #include <kschan.h>
 #include <netcon.h>
-
-#include <mcran4.h>
+#include <MCellRan4.hpp>
 
 class KSSingleTrans;
 class KSSingleState;

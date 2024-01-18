@@ -7,6 +7,7 @@ add_library(
   Geom.cpp
   HypGeom.cpp
   LogNorm.cpp
+  MCellRan4.cpp
   MLCG.cpp
   NegExp.cpp
   Normal.cpp

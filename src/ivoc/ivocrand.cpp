@@ -33,6 +33,7 @@
 #include <RndInt.h>
 #include <HypGeom.h>
 #include <Weibull.h>
+#include <MCellRan4.hpp>
 
 #if HAVE_IV
 #include "ivoc.h"
@@ -59,8 +60,6 @@ class RandomPlay: public Observer, public Resource {
 using RandomPlayList = std::vector<RandomPlay*>;
 static RandomPlayList* random_play_list_;
 
-#include <mcran4.h>
-
 class NrnRandom123: public RNG {
   public:
     NrnRandom123(uint32_t id1, uint32_t id2, uint32_t id3 = 0);
@@ -82,49 +81,6 @@ NrnRandom123::NrnRandom123(uint32_t id1, uint32_t id2, uint32_t id3) {
 NrnRandom123::~NrnRandom123() {
     nrnran123_deletestream(s_);
 }
-
-
-// The decision that has to be made is whether each generator instance
-// should have its own seed or only one seed for all. We choose separate
-// seed for each but if arg not present or 0 then seed chosen by system.
-
-// the addition of ilow > 0 means that value is used for the lowindex
-// instead of the mcell_ran4_init global 32 bit lowindex.
-
-class MCellRan4: public RNG {
-  public:
-    MCellRan4(uint32_t ihigh = 0, uint32_t ilow = 0);
-    virtual ~MCellRan4();
-    virtual uint32_t asLong() {
-        return (uint32_t) (ilow_ == 0 ? mcell_iran4(&ihigh_) : nrnRan4int(&ihigh_, ilow_));
-    }
-    virtual void reset() {
-        ihigh_ = orig_;
-    }
-    virtual double asDouble() {
-        return (ilow_ == 0 ? mcell_ran4a(&ihigh_) : nrnRan4dbl(&ihigh_, ilow_));
-    }
-    uint32_t ihigh_;
-    uint32_t orig_;
-    uint32_t ilow_;
-
-  private:
-    static uint32_t cnt_;
-};
-
-MCellRan4::MCellRan4(uint32_t ihigh, uint32_t ilow) {
-    ++cnt_;
-    ilow_ = ilow;
-    ihigh_ = ihigh;
-    if (ihigh_ == 0) {
-        ihigh_ = cnt_;
-        ihigh_ = (uint32_t) asLong();
-    }
-    orig_ = ihigh_;
-}
-MCellRan4::~MCellRan4() {}
-
-uint32_t MCellRan4::cnt_ = 0;
 
 class Isaac64: public RNG {
   public:

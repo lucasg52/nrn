@@ -37,7 +37,6 @@ set(HEADER_FILES_TO_INSTALL
     oc/hocgetsym.h
     oc/hoclist.h
     oc/hocparse.h
-    oc/mcran4.h
     oc/mech_api.h
     oc/nrnapi.h
     oc/nrnassrt.h

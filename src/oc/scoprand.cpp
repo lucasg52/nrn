@@ -4,6 +4,8 @@
 #include <unistd.h>
 #endif
 
+#include "MCellRan4.hpp"
+
 /* this was removed from the scopmath library since there could be
 multiple copies of the static value below. One in neuron.exe and the
 other in nrnmech.dll.
@@ -23,7 +25,6 @@ static char RCSid[] = "random.cpp,v 1.4 1999/01/04 12:46:49 hines Exp";
 #endif
 
 #include <math.h>
-#include <mcran4.h>
 #include "scoplib.h"
 static uint32_t value = 1;
 
