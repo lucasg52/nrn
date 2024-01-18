@@ -33,4 +33,3 @@ void hoc_usemcran4() {
     hoc_ret();
     hoc_pushx(prev);
 }
-
