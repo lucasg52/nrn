@@ -43,7 +43,7 @@ set(HEADER_FILES_TO_INSTALL
     oc/nrnassrt.h
     oc/nrnmpi.h
     oc/nrnrandom.h
-    oc/nrnran123.h
+    gnu/nrnran123.h
     oc/oc_ansi.h
     oc/ocfunc.h
     oc/ocmisc.h
@@ -78,7 +78,7 @@ set(NRN_HEADERS_INCLUDE_LIST)
 # =============================================================================
 # Lists of random number related files
 # =============================================================================
-set(RAN_FILE_LIST oc_MCellRan4.cpp nrnran123.cpp)
+set(RAN_FILE_LIST oc_MCellRan4.cpp)
 
 # =============================================================================
 # Files in oc directory

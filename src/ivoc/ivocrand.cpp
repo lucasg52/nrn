@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "random1.h"
 
 #include <InterViews/resource.h>
 #include "classreg.h"
@@ -34,6 +33,8 @@
 #include <Weibull.h>
 #include <MCellRan4.hpp>
 #include <Isaac64.hpp>
+#include <Random123RNG.hpp>
+#include <Rand.hpp>
 
 #if HAVE_IV
 #include "ivoc.h"
@@ -60,35 +61,13 @@ class RandomPlay: public Observer, public Resource {
 using RandomPlayList = std::vector<RandomPlay*>;
 static RandomPlayList* random_play_list_;
 
-class NrnRandom123: public RNG {
-  public:
-    NrnRandom123(uint32_t id1, uint32_t id2, uint32_t id3 = 0);
-    virtual ~NrnRandom123();
-    virtual uint32_t asLong() {
-        return nrnran123_ipick(s_);
-    }
-    virtual double asDouble() {
-        return nrnran123_dblpick(s_);
-    }
-    virtual void reset() {
-        nrnran123_setseq(s_, 0, 0);
-    }
-    nrnran123_State* s_;
-};
-NrnRandom123::NrnRandom123(uint32_t id1, uint32_t id2, uint32_t id3) {
-    s_ = nrnran123_newstream3(id1, id2, id3);
-}
-NrnRandom123::~NrnRandom123() {
-    nrnran123_deletestream(s_);
-}
-
 RandomPlay::RandomPlay(Rand* r, neuron::container::data_handle<double> px)
     : r_{r}
     , px_{std::move(px)} {
     random_play_list_->push_back(this);
     ref();
     neuron::container::notify_when_handle_dies(px_, this);
-    nrn_notify_when_void_freed(r->obj_, this);
+    nrn_notify_when_void_freed(static_cast<Object*>(r->userdata_), this);
 }
 void RandomPlay::play() {
     // printf("RandomPlay::play\n");
@@ -107,24 +86,6 @@ void RandomPlay::update(Observable*) {
     nrn_notify_pointer_disconnect(this);
     list_remove();
 }
-
-Rand::Rand(unsigned long seed, int size, Object* obj) {
-    // printf("Rand\n");
-    gen = new ACG(seed, size);
-    rand = new Normal(0., 1., gen);
-    type_ = 0;
-    obj_ = obj;
-}
-
-Rand::~Rand() {
-    // printf("~Rand\n");
-    delete gen;
-    delete rand;
-}
-
-// constructor for a random number generator based on the RNG class
-// from the gnu c++ class library
-// defaults to the ACG generator (see below)
 
 // syntax:
 // a = new Rand([seed],[size])
@@ -168,6 +129,12 @@ static double r_ACG(void* r) {
     if (ifarg(2))
         size = int(chkarg(2, 7, 98));
 
+    ACG* acg{};
+    try {
+        acg = new ACG(seed, size);
+    } catch (const std::bad_alloc& e) {
+        hoc_execerror("Bad allocation for 'ACG'", e.what());
+    }
     x->rand->generator(new ACG(seed, size));
     x->type_ = 0;
     delete x->gen;
@@ -191,7 +158,13 @@ static double r_MLCG(void* r) {
     if (ifarg(2))
         seed2 = long(*getarg(2));
 
-    x->rand->generator(new MLCG(seed1, seed2));
+    MLCG* mlcg{};
+    try {
+        mlcg = new MLCG(seed1, seed2);
+    } catch (const std::bad_alloc& e) {
+        hoc_execerror("Bad allocation for 'MLCG'", e.what());
+    }
+    x->rand->generator(mlcg);
     delete x->gen;
     x->gen = x->rand->generator();
     x->type_ = 1;
@@ -208,7 +181,12 @@ static double r_MCellRan4(void* r) {
         seed1 = (uint32_t) (chkarg(1, 0., dmaxuint));
     if (ifarg(2))
         ilow = (uint32_t) (chkarg(2, 0., dmaxuint));
-    MCellRan4* mcr = new MCellRan4(seed1, ilow);
+    MCellRan4* mcr{};
+    try {
+        mcr = new MCellRan4(seed1, ilow);
+    } catch (const std::bad_alloc& e) {
+        hoc_execerror("Bad allocation for 'MCellRan4'", e.what());
+    }
     x->rand->generator(mcr);
     delete x->gen;
     x->gen = x->rand->generator();
@@ -248,7 +226,12 @@ static double r_nrnran123(void* r) {
         id2 = (uint32_t) (chkarg(2, 0., dmaxuint));
     if (ifarg(3))
         id3 = (uint32_t) (chkarg(3, 0., dmaxuint));
-    NrnRandom123* r123 = new NrnRandom123(id1, id2, id3);
+    NrnRandom123* r123{};
+    try {
+        r123 = new NrnRandom123(id1, id2, id3);
+    } catch (const std::bad_alloc& e) {
+        hoc_execerror("Bad allocation for 'NrnRandom123'", e.what());
+    }
     x->rand->generator(r123);
     delete x->gen;
     x->gen = x->rand->generator();
@@ -541,7 +524,7 @@ static Member_func r_members[] = {{"ACG", r_ACG},
                                   {nullptr, nullptr}};
 
 void Random_reg() {
-    class2oc("Random", r_cons, r_destruct, r_members, NULL, NULL, NULL);
+    class2oc("Random", r_cons, r_destruct, r_members, nullptr, nullptr, nullptr);
     random_play_list_ = new RandomPlayList;
 }
 

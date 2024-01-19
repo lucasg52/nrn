@@ -1,7 +1,5 @@
-#include <../../nrnconf.h>
 #include <inttypes.h>
-#include <nrnran123.h>
-#include <hocdec.h>
+#include "nrnran123.h"
 #include <stdlib.h>
 #include <math.h>
 #include <Random123/philox.h>
@@ -29,8 +27,7 @@ nrnran123_State* nrnran123_newstream(uint32_t id1, uint32_t id2) {
     return nrnran123_newstream3(id1, id2, 0);
 }
 nrnran123_State* nrnran123_newstream3(uint32_t id1, uint32_t id2, uint32_t id3) {
-    nrnran123_State* s;
-    s = (nrnran123_State*) ecalloc(sizeof(nrnran123_State), 1);
+    auto* s = new nrnran123_State;
     s->c.v[1] = id3;
     s->c.v[2] = id1;
     s->c.v[3] = id2;
@@ -39,7 +36,7 @@ nrnran123_State* nrnran123_newstream3(uint32_t id1, uint32_t id2, uint32_t id3) 
 }
 
 void nrnran123_deletestream(nrnran123_State* s) {
-    free(s);
+    delete s;
 }
 
 void nrnran123_getseq(nrnran123_State* s, uint32_t* seq, char* which) {

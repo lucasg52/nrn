@@ -1,11 +1,3 @@
-#include <../../nrnconf.h>
-#include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include "MCellRan4.hpp"
-
 /* this was removed from the scopmath library since there could be
 multiple copies of the static value below. One in neuron.exe and the
 other in nrnmech.dll.
@@ -24,9 +16,10 @@ other in nrnmech.dll.
 static char RCSid[] = "random.cpp,v 1.4 1999/01/04 12:46:49 hines Exp";
 #endif
 
-#include <math.h>
+#include <cmath>
 #include "scoplib.h"
-#include "oc_MCellRan4.hpp"
+#include "MCellRan4.hpp" // From gnu
+#include "oc_MCellRan4.hpp" // From oc
 static uint32_t value = 1;
 
 /*-----------------------------------------------------------------------------
@@ -69,7 +62,7 @@ double scop_random(void) {
             /*m = 0xFFFFFFFF;*/ /* limited to 32 bit integers*/
             m = ~0;
         value = a * value + c;
-        return (fabs((double) value / (double) m));
+        return std::fabs((double) value / (double) m);
     }
 }
 

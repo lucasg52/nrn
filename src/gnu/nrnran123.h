@@ -1,5 +1,6 @@
-#ifndef nrnran123_h
-#define nrnran123_h
+#pragma once
+
+// This interface is used in VERBATIM blocks in mod files
 
 /* interface to Random123 */
 /* http://www.thesalmons.org/john/random123/papers/random123sc11.pdf */
@@ -25,17 +26,16 @@ http://www.deshawresearch.com/resources_random123.html
 
 #include <inttypes.h>
 
-
-typedef struct nrnran123_State nrnran123_State;
-
-typedef struct nrnran123_array4x32 {
+struct nrnran123_array4x32 {
     uint32_t v[4];
-} nrnran123_array4x32;
+};
 
 /* global index. eg. run number */
 /* all generator instances share this global index */
 extern void nrnran123_set_globalindex(uint32_t gix);
 extern uint32_t nrnran123_get_globalindex();
+
+struct nrnran123_State;
 
 /* minimal data stream */
 extern nrnran123_State* nrnran123_newstream(uint32_t id1, uint32_t id2);
@@ -58,5 +58,3 @@ extern double nrnran123_normal(nrnran123_State*); /* mean 0.0, std 1.0 */
 extern nrnran123_array4x32 nrnran123_iran(uint32_t seq, uint32_t id1, uint32_t id2);
 extern nrnran123_array4x32 nrnran123_iran3(uint32_t seq, uint32_t id1, uint32_t id2, uint32_t id3);
 extern double nrnran123_uint2dbl(uint32_t);
-
-#endif

@@ -111,8 +111,7 @@ static double dmaxint_ = 9007199254740992;
 #include "ivocvect.h"
 
 // definition of random numer generator
-#include "random1.h"
-#include <Uniform.h>
+#include <Rand.hpp>
 
 #if HAVE_IV
 #include "utility.h"
