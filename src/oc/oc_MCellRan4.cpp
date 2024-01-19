@@ -1,21 +1,18 @@
 #include "hocdec.h"
+#include "oc_ansi.h"
 #include "MCellRan4.hpp"
 
-// hoc binding of gnu/MCellRan4.hpp
-extern double chkarg();
-extern int use_mcell_ran4_;
+static bool use_mcell_ran4_;
 
 void hoc_mcran4() {
-    uint32_t idx;
-    double* xidx;
-    double x;
-    xidx = hoc_pgetarg(1);
-    idx = (uint32_t) (*xidx);
-    x = mcell_ran4a(&idx);
+    double* xidx = hoc_pgetarg(1);
+    uint32_t idx = (uint32_t) (*xidx);
+    double x = mcell_ran4a(&idx);
     *xidx = idx;
     hoc_ret();
     hoc_pushx(x);
 }
+
 void hoc_mcran4init() {
     double prev = mcell_get_lowindex();
     if (ifarg(1)) {
@@ -25,6 +22,7 @@ void hoc_mcran4init() {
     hoc_ret();
     hoc_pushx(prev);
 }
+
 void hoc_usemcran4() {
     double prev = (double) use_mcell_ran4_;
     if (ifarg(1)) {
@@ -32,4 +30,12 @@ void hoc_usemcran4() {
     }
     hoc_ret();
     hoc_pushx(prev);
+}
+
+int mcran4_is_used() {
+    return use_mcell_ran4_;
+}
+
+void set_usemcran4(bool value) {
+    use_mcell_ran4_ = value;
 }

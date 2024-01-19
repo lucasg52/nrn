@@ -10,6 +10,8 @@
 #include "nrn_ansi.h"
 #include "ocfunc.h"
 
+#include "oc_MCellRan4.hpp"
+
 
 extern void hoc_nrnmpi_init();
 
@@ -231,7 +233,6 @@ double hoc_default_dll_loaded_;
 char* neuron_home;
 const char* nrn_mech_dll;      /* but actually only for NEURON mswin and linux */
 int nrn_noauto_dlopen_nrnmech; /* 0 except when binary special. */
-int use_mcell_ran4_;
 int nrn_xopen_broadcast_;
 
 void hoc_init(void) /* install constants and built-ins table */
@@ -255,7 +256,7 @@ void hoc_init(void) /* install constants and built-ins table */
         }
     }
 
-    use_mcell_ran4_ = 0;
+    set_usemcran4(false);
     nrn_xopen_broadcast_ = 255;
     extern void hoc_init_space(void);
     hoc_init_space();

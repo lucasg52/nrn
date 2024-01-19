@@ -78,7 +78,7 @@ set(NRN_HEADERS_INCLUDE_LIST)
 # =============================================================================
 # Lists of random number related files
 # =============================================================================
-set(RAN_FILE_LIST MCellRan4.cpp nrnran123.cpp)
+set(RAN_FILE_LIST oc_MCellRan4.cpp nrnran123.cpp)
 
 # =============================================================================
 # Files in oc directory
