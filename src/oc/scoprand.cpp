@@ -18,8 +18,8 @@ static char RCSid[] = "random.cpp,v 1.4 1999/01/04 12:46:49 hines Exp";
 
 #include <cmath>
 #include "scoplib.h"
-#include "MCellRan4.hpp" // From gnu
-#include "oc_MCellRan4.hpp" // From oc
+#include "MCellRan4.hpp"     // From gnu
+#include "oc_MCellRan4.hpp"  // From oc
 static uint32_t value = 1;
 
 /*-----------------------------------------------------------------------------
