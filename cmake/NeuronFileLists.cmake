@@ -38,6 +38,7 @@ set(HEADER_FILES_TO_INSTALL
     oc/hoclist.h
     oc/hocparse.h
     oc/mech_api.h
+    oc/memory.hpp
     oc/nrnapi.h
     oc/nrnassrt.h
     oc/nrnmpi.h
@@ -99,6 +100,7 @@ set(OC_FILE_LIST
     hoc_oop.cpp
     list.cpp
     math.cpp
+    memory.cpp
     mswinprt.cpp
     nonlin.cpp
     ocerf.cpp
