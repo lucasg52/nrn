@@ -15,7 +15,6 @@
 #include "ocobserv.h"
 #include <nrnran123.h>
 
-#include <RNG.h>
 #include <ACG.h>
 #include <MLCG.h>
 #include <Random.h>
