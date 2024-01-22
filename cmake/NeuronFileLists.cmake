@@ -76,15 +76,9 @@ set(HEADER_FILES_TO_INSTALL
 set(NRN_HEADERS_INCLUDE_LIST)
 
 # =============================================================================
-# Lists of random number related files
-# =============================================================================
-set(RAN_FILE_LIST oc_MCellRan4.cpp)
-
-# =============================================================================
 # Files in oc directory
 # =============================================================================
 set(OC_FILE_LIST
-    ${RAN_FILE_LIST}
     audit.cpp
     axis.cpp
     code.cpp

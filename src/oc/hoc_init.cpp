@@ -10,9 +10,6 @@
 #include "nrn_ansi.h"
 #include "ocfunc.h"
 
-#include "oc_MCellRan4.hpp"
-
-
 extern void hoc_nrnmpi_init();
 
 #if PVM

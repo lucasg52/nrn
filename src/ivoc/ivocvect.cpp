@@ -11,6 +11,8 @@
 #include "fourier.h"
 #include "mymath.h"
 
+#include "Random123RNG.hpp"
+
 #if HAVE_IV
 #include <InterViews/glyph.h>
 #include <InterViews/hit.h>
@@ -109,9 +111,6 @@ static double dmaxint_ = 9007199254740992;
     }
 
 #include "ivocvect.h"
-
-// definition of random numer generator
-#include <Rand.hpp>
 
 #if HAVE_IV
 #include "utility.h"
@@ -2015,7 +2014,7 @@ static Object** v_addrand(void* v) {
     Vect* x = (Vect*) v;
     Object* ob = *hoc_objgetarg(1);
     check_obj_type(ob, "Random");
-    Rand* r = (Rand*) (ob->u.this_pointer);
+    random123RNG* r = static_cast<random123RNG*>(ob->u.this_pointer);
     int top = x->size() - 1;
     int start = 0;
     int end = top;
@@ -2024,7 +2023,7 @@ static Object** v_addrand(void* v) {
         end = int(chkarg(3, start, top));
     }
     for (int i = start; i <= end; i++)
-        x->elem(i) += (*(r->rand))();
+        x->elem(i) += (*r->get_random_generator())();
     return x->temp_objvar();
 }
 
@@ -2032,7 +2031,7 @@ static Object** v_setrand(void* v) {
     Vect* x = (Vect*) v;
     Object* ob = *hoc_objgetarg(1);
     check_obj_type(ob, "Random");
-    Rand* r = (Rand*) (ob->u.this_pointer);
+    random123RNG* r = static_cast<random123RNG*>(ob->u.this_pointer);
     int top = x->size() - 1;
     int start = 0;
     int end = top;
@@ -2041,7 +2040,7 @@ static Object** v_setrand(void* v) {
         end = int(chkarg(3, start, top));
     }
     for (int i = start; i <= end; i++)
-        x->elem(i) = (*(r->rand))();
+        x->elem(i) += (*r->get_random_generator())();
     return x->temp_objvar();
 }
 

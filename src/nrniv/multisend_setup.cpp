@@ -8,8 +8,7 @@ we construct a gid target host list on host gid%nhost and copy that list to
 the source host owning the gid.
 */
 #include "oc_ansi.h"
-
-#include "oc_ansi.h"
+#include "nrnran123.h"
 
 static void del(int* a) {
     if (a) {
@@ -94,18 +93,16 @@ void TarList::alloc() {
     }
 }
 
-#include "Isaac64.hpp"
 static void* ranstate;
 
 static void random_init(int i) {
     if (!ranstate) {
-        ranstate = nrnisaac_new();
+        ranstate = nrnran123_newstream(0, 0);
     }
-    nrnisaac_init(ranstate, nrnmpi_myid + 1);
 }
 
 static unsigned int get_random() {
-    return nrnisaac_uint32_pick(ranstate);
+    return nrnran123_ipick(static_cast<nrnran123_State*>(ranstate));
 }
 
 static int iran(int i1, int i2) {

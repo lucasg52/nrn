@@ -1,18 +1,18 @@
 #pragma once
 
-#include "RNG.h"
-#include "nrnran123.h"
+#include <memory>
 
-#include <cstdint>
+#include <Random123/philox.h>
+#include <Random123/MicroURNG.hpp>
 
-static nrnran123_State* s_;
-class NrnRandom123: public RNG {
-  public:
-    NrnRandom123(uint32_t id1, uint32_t id2, uint32_t id3 = 0);
-    virtual ~NrnRandom123();
-    virtual uint32_t asLong();
-    virtual double asDouble();
-    virtual void reset();
-    nrnran123_State* s_;
+class random123RNG {
+    r123::Philox4x32::ctr_type c;
+    r123::Philox4x32::key_type k;
+    std::shared_ptr<r123::MicroURNG<r123::Philox4x32>> longmurng;
+
+    public:
+    random123RNG();
+    std::shared_ptr<r123::MicroURNG<r123::Philox4x32>> get_random_generator() {
+        return longmurng;
+    }
 };
-
