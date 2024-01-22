@@ -2,6 +2,7 @@
 
 #include "RNG.h"
 #include "Random.h"
+#include "distributions.hpp"
 
 // class for a random number generator based on the RNG class
 // defaults to the ACG generator
@@ -17,7 +18,7 @@ class Rand {
     Rand(unsigned long seed = 0, int size = 55, void* userdata = nullptr);
     ~Rand();
     RNG* gen;
-    Random* rand;
+    Distribution* d;
     int type_;
     void* userdata_;
 };

@@ -18,18 +18,9 @@
 #include <ACG.h>
 #include <MLCG.h>
 #include <Random.h>
-#include <Poisson.h>
-#include <Normal.h>
-#include <Uniform.h>
-#include <Binomial.h>
-#include <DiscUnif.h>
 #include <Erlang.h>
-#include <Geom.h>
-#include <LogNorm.h>
-#include <NegExp.h>
 #include <RndInt.h>
 #include <HypGeom.h>
-#include <Weibull.h>
 #include <MCellRan4.hpp>
 #include <Isaac64.hpp>
 #include <Random123RNG.hpp>
@@ -336,15 +327,15 @@ Rand* nrn_random_arg(int i) {
 
 // uniform random variable over the open interval [low...high)
 // syntax:
-//     r.uniform(low,high)
+//     r.uniform(low, high)
 
 static double r_uniform(void* r) {
     Rand* x = (Rand*) r;
     double a1 = *getarg(1);
     double a2 = *getarg(2);
     delete x->rand;
-    x->rand = new Uniform(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new Uniform(a1, a2);
+    return x->d(x->gen);
 }
 
 // uniform random variable over the closed interval [low...high]
@@ -356,8 +347,8 @@ static double r_discunif(void* r) {
     long a1 = long(*getarg(1));
     long a2 = long(*getarg(2));
     delete x->rand;
-    x->rand = new DiscreteUniform(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new DiscreteUniform(a1, a2);
+    return x->d(x->gen);
 }
 
 
@@ -367,11 +358,11 @@ static double r_discunif(void* r) {
 
 static double r_normal(void* r) {
     Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
-    double a2 = *getarg(2);
+    double mean = *getarg(1);
+    double variance = *getarg(2);
     delete x->rand;
-    x->rand = new Normal(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new Normal(mean, std::sqrt(variance));
+    return x->d(x->gen);
 }
 
 
@@ -381,11 +372,11 @@ static double r_normal(void* r) {
 
 static double r_lognormal(void* r) {
     Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
-    double a2 = *getarg(2);
+    double mean = *getarg(1);
+    double variance = *getarg(2);
     delete x->rand;
-    x->rand = new LogNormal(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new LogNormal(mean, std::sqrt(variance));
+    return x->d(x->gen);
 }
 
 
@@ -395,10 +386,10 @@ static double r_lognormal(void* r) {
 
 static double r_poisson(void* r) {
     Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
+    double mean = *getarg(1);
     delete x->rand;
-    x->rand = new Poisson(a1, x->gen);
-    return (*(x->rand))();
+    x->rand = new Poisson(mean);
+    return x->d(x->gen);
 }
 
 
@@ -410,11 +401,11 @@ static double r_poisson(void* r) {
 
 static double r_binomial(void* r) {
     Rand* x = (Rand*) r;
-    int a1 = int(chkarg(1, 0, 1e99));
-    double a2 = chkarg(2, 0, 1);
+    int t = int(chkarg(1, 0, 1e99));
+    double p = chkarg(2, 0, 1);
     delete x->rand;
-    x->rand = new Binomial(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new Binomial(t, p);
+    return x->d(x->gen);
 }
 
 
@@ -427,24 +418,10 @@ static double r_binomial(void* r) {
 
 static double r_geometric(void* r) {
     Rand* x = (Rand*) r;
-    double a1 = chkarg(1, 0, 1);
+    double mean = chkarg(1, 0, 1);
     delete x->rand;
-    x->rand = new Geometric(a1, x->gen);
-    return (*(x->rand))();
-}
-
-
-// hypergeometric distribution
-// syntax:
-//     r.hypergeo(mean,variance)
-
-static double r_hypergeo(void* r) {
-    Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
-    double a2 = *getarg(2);
-    delete x->rand;
-    x->rand = new HyperGeometric(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new Geometric(mean);
+    return x->d(x->gen);
 }
 
 
@@ -454,10 +431,10 @@ static double r_hypergeo(void* r) {
 
 static double r_negexp(void* r) {
     Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
+    double xmean = *getarg(1);
     delete x->rand;
-    x->rand = new NegativeExpntl(a1, x->gen);
-    return (*(x->rand))();
+    x->rand = new NegativeExpntl(xmean);
+    return x->d(x->gen);
 }
 
 
@@ -465,14 +442,14 @@ static double r_negexp(void* r) {
 // syntax:
 //     r.erlang(mean,variance)
 
-static double r_erlang(void* r) {
-    Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
-    double a2 = *getarg(2);
-    delete x->rand;
-    x->rand = new Erlang(a1, a2, x->gen);
-    return (*(x->rand))();
-}
+// static double r_erlang(void* r) {
+//     Rand* x = (Rand*) r;
+//     double a1 = *getarg(1);
+//     double a2 = *getarg(2);
+//     delete x->rand;
+//     x->rand = new Erlang(a1, a2, x->gen);
+//     return (*(x->rand))();
+// }
 
 
 // Weibull distribution
@@ -481,11 +458,11 @@ static double r_erlang(void* r) {
 
 static double r_weibull(void* r) {
     Rand* x = (Rand*) r;
-    double a1 = *getarg(1);
-    double a2 = *getarg(2);
+    double alpha = *getarg(1);
+    double beta = *getarg(2);
     delete x->rand;
-    x->rand = new Weibull(a1, a2, x->gen);
-    return (*(x->rand))();
+    x->rand = new Weibull(alpha, beta);
+    return x->d(x->gen);
 }
 
 static double r_play(void* r) {
@@ -515,9 +492,8 @@ static Member_func r_members[] = {{"ACG", r_ACG},
                                   {"binomial", r_binomial},
                                   {"poisson", r_poisson},
                                   {"geometric", r_geometric},
-                                  {"hypergeo", r_hypergeo},
                                   {"negexp", r_negexp},
-                                  {"erlang", r_erlang},
+                                  // {"erlang", r_erlang}, Used by 1 model (98017)
                                   {"weibull", r_weibull},
                                   {"play", r_play},
                                   {nullptr, nullptr}};

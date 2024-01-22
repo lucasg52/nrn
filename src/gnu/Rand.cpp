@@ -1,15 +1,15 @@
 #include "Rand.hpp"
 #include "ACG.h"
-#include "Normal.h"
+#include "distributions.hpp"
 
 Rand::Rand(unsigned long seed, int size, void* userdata)
 : gen(new ACG(seed, size))
-, rand(new Normal(0., 1., gen))
+, d(new Uniform(0., 1.))
 , type_(0)
 , userdata_(userdata) {
 }
 
 Rand::~Rand() {
     delete gen;
-    delete rand;
+    delete d;
 }
