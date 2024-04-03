@@ -355,6 +355,7 @@ function(nrn_add_test)
     # end up with {build_directory}/path/to/test_working_directory/path/to/script.py
     file(
       GLOB script_files
+      CONFIGURE_DEPENDS
       RELATIVE "${test_source_directory}/${sim_directory}"
       "${test_source_directory}/${sim_directory}/${script_pattern}")
     foreach(script_file ${script_files})
