@@ -58,7 +58,7 @@ void MatrixMap::alloc(int start, int nnode, Node** nodes, int* layer) {
         if (it == 0 || jt == 0) {
             ptree_[plen_] = &place_holder;
         } else {
-            ptree_[plen_] = &_nt->_sparseMat->coeffRef(it - 1, jt - 1);
+            ptree_[plen_] = _nt->_sparseMat->mep(it - 1, jt - 1);
         }
         ++plen_;
     }

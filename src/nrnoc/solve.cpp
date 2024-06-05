@@ -1,4 +1,6 @@
 #include <../../nrnconf.h>
+
+#include <ivoc/ivocvect.h>
 /* /local/src/master/nrn/src/nrnoc/solve.cpp,v 1.15 1999/07/12 14:34:13 hines Exp */
 
 /* solve.cpp 15-Dec-88 */
@@ -368,9 +370,14 @@ void nrn_solve(NrnThread* _nt) {
         nrn_thread_error("solve use_sparse13");
         update_sp13_mat_based_on_actual_d(_nt);
         update_sp13_rhs_based_on_actual_rhs(_nt);
-        Eigen::SparseLU<Eigen::SparseMatrix<double, Eigen::RowMajor>> lu(*_nt->_sparseMat);
-        Eigen::Map<Eigen::VectorXd> rhs(_nt->_sparse_rhs + 1, _nt->_sparseMat->cols());
-        rhs = lu.solve(rhs);
+        Vect rhs(_nt->_sparseMat->ncol());
+        for (int i = 0; i < rhs.size(); ++i) {
+            rhs[i] = _nt->_sparse_rhs[i + 1];
+        }
+        _nt->_sparseMat->solv(&rhs, &rhs, false);
+        for (int i = 0; i < rhs.size(); ++i) {
+            _nt->_sparse_rhs[i + 1] = rhs[i];
+        }
         update_actual_d_based_on_sp13_mat(_nt);
         update_actual_rhs_based_on_sp13_rhs(_nt);
     } else {

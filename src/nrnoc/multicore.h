@@ -27,7 +27,7 @@ actual_v, etc.
 */
 
 #include "membfunc.h"
-#include <Eigen/Sparse>
+#include <ivoc/ocmatrix.h>
 
 #include <cstddef>
 
@@ -92,7 +92,7 @@ struct NrnThread {
     Node** _v_parent;
     double* _sparse_rhs;           /* rhs matrix for sparse13 solver. updates to and from this vector
                                     need to be transfered to actual_rhs */
-    Eigen::SparseMatrix<double, Eigen::RowMajor>* _sparseMat{}; /* handle to general sparse matrix */
+    OcSparseMatrix* _sparseMat{}; /* handle to general sparse matrix */
     Memb_list* _ecell_memb_list; /* normally nullptr */
     Node** _ecell_children;      /* nodes with no extcell but parent has it */
     void* _vcv;                  /* replaces old cvode_instance and nrn_cvode_ */

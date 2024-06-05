@@ -391,7 +391,7 @@ void nrn_rhs(neuron::model_sorted_token const& cache_token, NrnThread& nt) {
     auto* const vec_rhs = nt.node_rhs_storage();
     if (use_sparse13) {
         nrn_thread_error("nrn_rhs use_sparse13");
-        int neqn = _nt->_sparseMat->cols();
+        int neqn = _nt->_sparseMat->ncol();
         for (int i = 1; i <= neqn; ++i) {
             _nt->_sparse_rhs[i] = 0.;
         }
@@ -496,12 +496,7 @@ void nrn_lhs(neuron::model_sorted_token const& sorted_token, NrnThread& nt) {
     }
 
     if (use_sparse13) {
-        Eigen::SparseMatrix<double, Eigen::RowMajor>& m_ = *_nt->_sparseMat;
-        for (int k = 0; k < m_.outerSize(); ++k) {
-            for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(m_, k); it; ++it) {
-                it.valueRef() = 0.;
-            }
-        }
+        _nt->_sparseMat->zero();
     }
 
     // Make sure the SoA node diagonals are also zeroed (is this needed?)
@@ -1991,7 +1986,7 @@ static void nrn_matrix_node_alloc(void) {
         /*printf(" %d extracellular nodes\n", extn);*/
         neqn += extn;
         nt->_sparse_rhs = (double*) ecalloc(neqn + 1, sizeof(double));
-        nt->_sparseMat = new Eigen::SparseMatrix<double, Eigen::RowMajor>(neqn, neqn);
+        nt->_sparseMat = new OcSparseMatrix(neqn, neqn);
         for (in = 0, i = 1; in < nt->end; ++in, ++i) {
             nt->_v_node[in]->eqn_index_ = i;
             if (nt->_v_node[in]->extnode) {
@@ -2003,25 +1998,25 @@ static void nrn_matrix_node_alloc(void) {
             const Extnode* nde = nd->extnode;
             const Node *pnd = nt->_v_parent[in];
             int i = nd->eqn_index_;
-            nt->_sparseMat->coeffRef(i - 1, i - 1) = 0.;
+            nt->_sparseMat->operator()(i - 1, i - 1) = 0.;
             if (nde) {
                 for (int ie = 0; ie < nlayer; ++ie) {
                     int k = i + ie + 1;
-                    nt->_sparseMat->coeffRef(k - 1, k - 1) = 0.;
-                    nt->_sparseMat->coeffRef(k - 1, k - 2) = 0;
-                    nt->_sparseMat->coeffRef(k - 2, k - 1) = 0;
+                    nt->_sparseMat->operator()(k - 1, k - 1) = 0.;
+                    nt->_sparseMat->operator()(k - 1, k - 2) = 0.;
+                    nt->_sparseMat->operator()(k - 2, k - 1) = 0.;
                 }
             }
             if (pnd) {
                 int j = pnd->eqn_index_;
-                nt->_sparseMat->coeffRef(j - 1, i - 1);
-                nt->_sparseMat->coeffRef(i - 1, j - 1);
+                nt->_sparseMat->operator()(j - 1, i - 1) = 0.;
+                nt->_sparseMat->operator()(i - 1, j - 1) = 0.;
                 if (nde && pnd->extnode)
                     for (int ie = 0; ie < nlayer; ++ie) {
                         int kp = j + ie + 1;
                         int k = i + ie + 1;
-                        nt->_sparseMat->coeffRef(kp - 1, k - 1) = 0;
-                        nt->_sparseMat->coeffRef(k - 1, kp - 1) = 0;
+                        nt->_sparseMat->operator()(kp - 1, k - 1) = 0.;
+                        nt->_sparseMat->operator()(k - 1, kp - 1) = 0.;
                     }
             }
         }
@@ -2034,26 +2029,26 @@ static void nrn_matrix_node_alloc(void) {
             pnd = nt->_v_parent[in];
             i = nd->eqn_index_;
             nt->_sparse_rhs[i] = nt->actual_rhs(in);
-            nd->_d_matelm = &nt->_sparseMat->coeffRef(i - 1, i - 1);
+            nd->_d_matelm = nt->_sparseMat->mep(i - 1, i - 1);
             if (nde) {
                 for (int ie = 0; ie < nlayer; ++ie) {
                     int k = i + ie + 1;
-                    nde->_d[ie] = &nt->_sparseMat->coeffRef(k - 1, k - 1);
+                    nde->_d[ie] = nt->_sparseMat->mep(k - 1, k - 1);
                     nde->_rhs[ie] = nt->_sparse_rhs + k;
-                    nde->_x21[ie] = &nt->_sparseMat->coeffRef(k - 1, k - 2);
-                    nde->_x12[ie] = &nt->_sparseMat->coeffRef(k - 2, k - 1);
+                    nde->_x21[ie] = nt->_sparseMat->mep(k - 1, k - 2);
+                    nde->_x12[ie] = nt->_sparseMat->mep(k - 2, k - 1);
                 }
             }
             if (pnd) {
                 j = pnd->eqn_index_;
-                nd->_a_matelm = &nt->_sparseMat->coeffRef(j - 1, i - 1);
-                nd->_b_matelm = &nt->_sparseMat->coeffRef(i - 1, j - 1);
+                nd->_a_matelm = nt->_sparseMat->mep(j - 1, i - 1);
+                nd->_b_matelm = nt->_sparseMat->mep(i - 1, j - 1);
                 if (nde && pnd->extnode)
                     for (int ie = 0; ie < nlayer; ++ie) {
                         int kp = j + ie + 1;
                         int k = i + ie + 1;
-                        nde->_a_matelm[ie] = &nt->_sparseMat->coeffRef(kp - 1, k - 1);
-                        nde->_b_matelm[ie] = &nt->_sparseMat->coeffRef(k - 1, kp - 1);
+                        nde->_a_matelm[ie] = nt->_sparseMat->mep(kp - 1, k - 1);
+                        nde->_b_matelm[ie] = nt->_sparseMat->mep(k - 1, kp - 1);
                     }
             } else { /* not needed if index starts at 1 */
                 nd->_a_matelm = nullptr;

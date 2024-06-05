@@ -675,7 +675,7 @@ void nrn_print_matrix(NrnThread* _nt) {
             std::cout << &_nt->_sparseMat << std::endl;
         } else {
             std::cout << &_nt->_sparseMat << std::endl;
-            int n = _nt->_sparseMat->cols();
+            int n = _nt->_sparseMat->ncol();
             for (int i = 1; i <= n; ++i) {
                 Printf("%d %g\n", i, _nt->actual_rhs(i));
             }
