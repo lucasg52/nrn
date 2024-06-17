@@ -138,6 +138,7 @@ struct generic_data_handle {
             return {};
         }
         if (typeid(T*) != *m_type) {
+            backward_wrapper();
             throw_error(" cannot be converted to data_handle<" + cxx_demangle(typeid(T).name()) +
                         ">");
         }
