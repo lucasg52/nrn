@@ -374,6 +374,38 @@ Description:
     a state since 
     only NEURON itself is allowed to calculate that value. 
 
+    STATE variables can be either scalar (one element per instance) or
+    array-valued (multiple elements per instance). For every scalar STATE
+    variable, there's a (possibly implicit) global variable which contains the
+    initial value of the STATE variable. The name of the initial value is the
+    name of the STATE suffixed with ``0``. The implicit default initial value is
+    ``0.0``. The initial value of array-valued STATE variables must be set in
+    the INITIAL block manually.
+
+    The following snippet defines three STATE variables, ``X``, ``Y`` and
+    ``Z``. The first two are scalar, the third is array valued. The value of
+    ``X`` immediately before running the INITIAL block is ``X0``, i.e.
+    ``21.0``. The (implicit) initial value of is ``0.0``. For ``Z`` only
+    ``Z[0]`` has been initialized.
+
+    .. code-block::
+        none
+
+        STATE {
+            X
+            Y
+            Z[6]
+        }
+
+        PARAMETER {
+            X0 = 21.0
+        }
+
+        INITIAL {
+            X = 2.0*X
+            Z[0] = -1.0
+        }
+
 
 ASSIGNED
 ~~~~~~~~
