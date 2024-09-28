@@ -8,7 +8,6 @@ class Cell:
     def __init__(self, gid, x, y, z, theta):
         self._gid = gid
         self._setup_morphology()
-        self.all = self.soma.wholetree()
         self._setup_biophysics()
         self.x = self.y = self.z = 0
         h.define_shape()
@@ -23,6 +22,8 @@ class Cell:
         self._ncs = []
 
         self.soma_v = h.Vector().record(self.soma(0.5)._ref_v)
+
+    all = property(lambda self : self.soma.wholetree(), None)
 
     def __repr__(self):
         return "{}[{}]".format(self.name, self._gid)
